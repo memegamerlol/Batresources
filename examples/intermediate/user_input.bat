@@ -8,9 +8,20 @@ echo Hello, %NAME%!
 echo.
 echo === Input with validation ===
 :getAge
+set AGE=
 set /p AGE=Enter your age: 
 if not defined AGE goto getAge
-if %AGE% lss 0 goto getAge
+REM Check if input is numeric
+set "valid="
+for /f "delims=0123456789" %%i in ("%AGE%") do set valid=1
+if defined valid (
+    echo Please enter a valid number
+    goto getAge
+)
+if %AGE% lss 0 (
+    echo Age cannot be negative
+    goto getAge
+)
 echo You are %AGE% years old.
 
 echo.

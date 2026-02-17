@@ -62,7 +62,33 @@ goto menu
 :createfile
 cls
 set /p filename=Enter filename to create: 
-echo Sample content > %filename%
+
+REM Validate filename - remove dangerous characters and paths
+set "filename=%filename:"=%"
+set "filename=%filename:/=%"
+set "filename=%filename:\=%"
+set "filename=%filename:|=%"
+set "filename=%filename:<=%"
+set "filename=%filename:>=%"
+set "filename=%filename:*=%"
+set "filename=%filename:?=%"
+
+REM Check if filename is empty after sanitization
+if "%filename%"=="" (
+    echo Error: Invalid filename
+    pause
+    goto menu
+)
+
+REM Check for path traversal attempts
+echo %filename% | findstr /C:".." >nul
+if %errorlevel%==0 (
+    echo Error: Invalid filename
+    pause
+    goto menu
+)
+
+echo Sample content > "%filename%"
 echo File created: %filename%
 echo.
 pause
